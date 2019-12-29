@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>KeepAlive</key>
+        <dict>
+            <key>SuccessfulExit</key>
+            <false/>
+        </dict>
+        <key>Label</key>
+        <string>io.appium.server</string>
+        <key>OnDemand</key>
+        <false/>
+        <key>UserName</key>
+        <string>jenkins</string>
+        <key>GroupName</key>
+        <string>wheel</string>
+        <key>ProgramArguments</key>
+        <array>
+                <string>/usr/local/bin/appium</string>
+                <string>--port</string>
+                <string>5000</string>
+                <string>--log-level</string>
+                <string>warn</string>
+        </array>
+        <key>WorkingDirectory</key>
+        <string>/Users/Shared/Jenkins/appium/</string>
+	<key>StandardOutPath</key>
+	<string>/Users/Shared/Jenkins/appium/appium.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/Shared/Jenkins/appium/appium_error.log</string>
+</dict>
+</plist>

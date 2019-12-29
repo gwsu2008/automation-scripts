@@ -1,0 +1,113 @@
+description = '''\
+
+To run this build script we must first 
+set an environment variable 
+ORG_GRADLE_PROJECT_property5=environment property
+
+Run as: 
+gradle -Pproperty4="argument property" -Dorg.gradle.project.property6="system property"
+'''
+
+ext {
+    property1 = 'Project property'
+}
+
+defaultTasks 'assertProps'
+
+// Task to start Grails application
+
+task startGrails(type: ExecWait) {
+    command './grailsw run-app --plain-output'
+    ready 'Server running.'
+    directory '../grails'
+}
+
+task startDropWizard(type: ExecWait) {
+    command './gradlew run'
+    ready 'Started SocketConnector@0.0.0.0:8001'
+    directory '../dropWizard'
+}
+
+class ExecWait extends DefaultTask {
+    String command
+    String ready
+    String directory
+
+    @TaskAction
+    def spawnProcess() {
+
+        ProcessBuilder builder = new ProcessBuilder(command.split(' '))
+        builder.redirectErrorStream(true)
+        builder.directory(new File(directory))
+        Process process = builder.start()
+
+        InputStream stdout = process.getInputStream()
+        BufferedReader reader = new BufferedReader(new
+                InputStreamReader(stdout))
+
+        def line
+        while ((line = reader.readLine()) != null) {
+            println line
+            if (line.contains(ready)) {
+                println "$command is ready"
+                break;
+            }
+        }
+    }
+}
+
+gradle.addListener new TestLifecycleListener()
+
+class TestLifecycleListener implements TaskExecutionListener {
+
+    def servers = ['DropWizard', 'Grails', 'Yeoman']
+
+    @Override
+    void beforeExecute(Task task) {
+        if (task.name == 'test') {
+            servers.each {
+                println "calling start$it"
+                task.project.tasks."start$it".execute()
+            }
+        }
+    }
+
+    @Override
+    void afterExecute(Task task, TaskState taskState) {
+        if (task.name == 'test') {
+            task.project.tasks.freeAllPorts.execute()
+        }
+    }
+}
+
+task freeAllPorts << {
+    def ports = [3501, 8000, 8001, 8080]
+
+    ports.each { port ->
+        def cmd = "lsof -Fp -i :$port"
+        def process = cmd.execute()
+        process.in.eachLine { line ->
+            def killProcess = "kill -9 ${ line.substring(1) }".execute()
+            killProcess.waitFor()
+        }
+    }
+}
+
+def configFile = file('config.groovy')
+def config = new ConfigSlurper(environment).parse(configFile)
+setProperty 'config', config
+
+def loadConfiguration() {
+    environment = hasProperty('env') ? env : 'dev'
+    setProperty 'environment', environment
+    println "Environment is set to $environment"
+}
+
+loadConfiguration()
+
+task printProps << {
+    println "serverName:  $config.serverName"
+    println "mail.server: $config.mail.server"
+    println "mail.port:   $config.mail.port"
+}
+

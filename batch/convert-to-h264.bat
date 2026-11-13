@@ -1,0 +1,1 @@
+ffmpeg -i %1 -c:v libx264 -profile:v high -level:v 4.1 -c:a copy output-convert.mp4

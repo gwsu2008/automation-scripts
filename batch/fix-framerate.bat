@@ -1,0 +1,1 @@
+ffmpeg -hwaccel cuda -i 04.mp4 -filter:v fps=30 -c:v h264_nvenc -preset p4 -cq 23 -c:a copy output.mp4

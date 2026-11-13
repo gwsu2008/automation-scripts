@@ -1,0 +1,1 @@
+yt-dlp.exe -S "vcodec:h264,res:1080,ext:mp4:m4a" "%*"

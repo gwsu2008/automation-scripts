@@ -1,0 +1,1 @@
+ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i 02.mp4 -c:v h264_nvenc -preset p5 -cq 23 -c:a copy output.mp4

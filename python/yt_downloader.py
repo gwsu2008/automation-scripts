@@ -36,8 +36,23 @@ def download_video(url, file_type):
     elif file_type == 'uhd':
         print("Downloading video in UHD format...")
         ydl_opts.update({
-            'format': 'bestvideo[height<=3840]+bestaudio/best',
+            'format': (
+                'bestvideo[height<=3840][ext=mp4]+'
+                'bestaudio[ext=m4a][acodec^=mp4a]/'
+                'bestvideo[height<=3840]+bestaudio[acodec^=mp4a]/'
+                'bestvideo[height<=3840]+bestaudio/best'
+            ),
             'merge_output_format': 'mp4',
+            'postprocessor_args': {
+                'Merger': [
+                    '-map', '0:v',
+                    '-map', '0:a',
+                    '-c:v', 'copy',
+                    '-c:a', 'aac',
+                    '-profile:a', 'aac_low',
+                    '-b:a', '256k',
+                ],
+            },
         })
     else:
         ydl_opts.update({
